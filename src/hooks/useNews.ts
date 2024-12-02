@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { Article } from "../types/Article";
 import { fetchApi } from "../api/services";
+import {
+  DateFilterOption,
+  DateFilterState,
+  FIlters,
+} from "../types/DateFilterOption";
+import { isSameDay } from "date-fns";
 
 const DEFAULT_PAGE_SIZE = 10;
 
@@ -15,8 +21,10 @@ type Multimedia = {
   width: number;
 };
 
+
 export default function useNews() {
   const [newsList, setNewsList] = useState<Article[]>([]);
+  const [searchResults, setsearchResults] = useState<Article[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>();
 
@@ -25,8 +33,8 @@ export default function useNews() {
   };
 
   const getImageUrl = (medias: Multimedia[]): string => {
-    const url = medias.filter(item => item.width >= 600)[0].url;
-    return `https://www.nytimes.com/${url}`
+    const url = medias.filter((item) => item.width >= 600)[0].url;
+    return `https://www.nytimes.com/${url}`;
   };
 
   const fetchFromNewsApi = (search: string): string => {
@@ -59,7 +67,7 @@ export default function useNews() {
         title: item.title,
         publishedAt: new Date(item.publishedAt),
         image: item.urlToImage,
-        source: item.source.name,
+        source: "NewsAPI",
       }));
     return mappedResult;
   };
@@ -71,7 +79,7 @@ export default function useNews() {
       title: item.webTitle,
       publishedAt: new Date(item.fields.firstPublicationDate),
       image: item.thumbnail,
-      source: item.fields.publication,
+      source: "The Guardian",
       category: item.pillarName,
     }));
     return mappedResult;
@@ -84,8 +92,8 @@ export default function useNews() {
       title: item.headline.main,
       publishedAt: new Date(item.pub_date),
       image: getImageUrl(item.multimedia),
-      source: item.source,
-      category: item.section_name
+      source: "The New York Times",
+      category: item.section_name,
     }));
     return mappedResult;
   };
@@ -98,30 +106,108 @@ export default function useNews() {
       const newyorktimesSource = fetchApi(fetchFromNewYorkNewsApi(search));
 
       const [newsApiResult, guardianNewsResult, newyorkTimesResult] =
-      await Promise.all([newsApiSource, guardianSource, newyorktimesSource]);
-      console.log("🚀 ~ aggregateNews ~ newsApiResult, guardianNewsResult, newyorkTimesResult:", newsApiResult, guardianNewsResult, newyorkTimesResult)
+        await Promise.all([newsApiSource, guardianSource, newyorktimesSource]);
+
+      const mappedApinewsResult = mapNewsApiResultToArticle(newsApiResult);
+      const mappedGuardianNewsResult =
+        mapGuardiansApiResultToArticle(guardianNewsResult);
+      const mappedNewyorkTimesNewsResult =
+        mapNewyorkTimesApiResultToArticle(newyorkTimesResult);
 
       const aggregations = [
-        ...mapNewsApiResultToArticle(newsApiResult),
-        ...mapGuardiansApiResultToArticle(guardianNewsResult),
-        ...mapNewyorkTimesApiResultToArticle(newyorkTimesResult),
+        ...mappedApinewsResult,
+        ...mappedGuardianNewsResult,
+        ...mappedNewyorkTimesNewsResult,
       ];
-
-      console.log({aggregations: aggregations.length});
-      
 
       setLoading(false);
       setNewsList(aggregations);
+      setsearchResults(aggregations);
     } catch (error) {
       setLoading(false);
       setError("An Error occurred");
     }
   };
 
+  function filterArticleByDates(
+    articles: Article[],
+    filter: DateFilterState
+  ): Article[] {
+    switch (filter.criteria) {
+      case DateFilterOption.BETWEEN:
+        if (!filter.from && !filter.to) {
+          throw new Error(
+            'startDate and endDate must be provided for "between" criteria'
+          );
+        }
+        return articles.filter(
+          (article) =>
+            article.publishedAt >= new Date(filter.from) &&
+            article.publishedAt <= new Date(filter.to as string)
+        );
+
+      case DateFilterOption.GREATER_THAN:
+        return articles.filter(
+          (article) => article.publishedAt > new Date(filter.from)
+        );
+
+      case DateFilterOption.LESS_THAN:
+        return articles.filter(
+          (article) => article.publishedAt < new Date(filter.from)
+        );
+
+      case DateFilterOption.IS_EQUAL:
+        return articles.filter((article) =>
+          isSameDay(article.publishedAt, new Date(filter.from))
+        );
+
+      default:
+        return articles;
+    }
+  }
+
+  const filterArticles = (filters: FIlters) => {
+    let articles = [...newsList];
+    if (filters.dateFilter) {
+      articles = filterArticleByDates(articles, filters.dateFilter);
+    }
+    if (filters.sourceFilters && filters.sourceFilters.length > 0) {
+      articles = articles
+        .filter((article) => {
+          if (filters.sourceFilters.includes(article.source)) {
+            return article;
+          }
+          return null;
+        })
+        .filter((item) => item);
+    }
+    if (filters.categoryFilters && filters.categoryFilters.length > 0) {
+      articles = articles
+        .filter((article) => {
+          if (
+            article.category &&
+            filters.categoryFilters.includes(article.category)
+          ) {
+            return article;
+          }
+          return null;
+        })
+        .filter((item) => item);
+    }
+    setNewsList(articles);
+  };
+
+  const clearFliters = () => {
+    const articles = [...searchResults]
+    setNewsList(articles);
+  }
+
   return {
     aggregateNews,
     loading,
     error,
     newsList,
+    filterArticles,
+    clearFliters
   };
 }

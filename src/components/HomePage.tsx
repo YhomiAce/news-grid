@@ -5,14 +5,13 @@ import NewsSearchInput from "./NewsSearchInput";
 import Spinner from "./Spinner";
 
 const HomePage = () => {
-  const { aggregateNews, newsList, loading } = useNews();
-  console.log("🚀 ~ HomePage ~ newsList:", newsList);
+  const { aggregateNews, newsList, loading, filterArticles, clearFliters } = useNews();
   return (
     <div className="p-10">
       <h1 className="font-bold text-center text-3xl mb-2">News Aggregator</h1>
       <div className="flex justify-center items-center gap-3 flex-wrap">
         <NewsSearchInput searchNews={aggregateNews} />
-        <FilterDrawer />
+        <FilterDrawer filterArticles={filterArticles} clearFliters={clearFliters} />
       </div>
       {loading && (
         <center className="mt-5">

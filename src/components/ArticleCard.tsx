@@ -18,20 +18,30 @@ export default function ArticleCard({ article }: ArticleCardProps) {
     window.open(url, "_blank");
   };
   return (
-    <Card sx={{ maxWidth: 345 }}>
+    <Card className="p-3" sx={{ maxWidth: 345 }}>
       <CardMedia sx={{ height: 140 }} image={article.image} title="article" />
       <CardContent>
-        <Typography variant="body2" sx={{ color: "text.secondary" }}>
+        <Typography variant="body1" className="text-2xl font-bold">
           {article.title}
         </Typography>
       </CardContent>
       <div className="flex flex-col p-3 gap-2">
-        <h5>Author: {article.author}</h5>
-        <span>Source: {article.source}</span>
+        <Typography variant="body2" sx={{ color: "text.secondary" }}>
+          Author: {article.author}
+        </Typography>
+        <Typography variant="body2" sx={{ color: "text.secondary" }}>
+          Source: {article.source}
+        </Typography>
       </div>
 
       <CardActions className="p-2 grid grid-cols-2 items-center gap-4">
-        <span className="text-sm">{formatDateByMDY(article.publishedAt)}</span>
+        <Typography
+          variant="body2"
+          sx={{ color: "text.secondary" }}
+          className="text-sm"
+        >
+          {formatDateByMDY(article.publishedAt)}
+        </Typography>
         <Button
           className="btn btn-neutral btn-xs"
           onClick={() => openLinkInNewTab(article.url)}

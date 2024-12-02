@@ -1,12 +1,23 @@
-
 import CategoryFilterItem from "./CategoryFilterItem";
 
-const CategoryFilter = () => {
+interface CategoryFilterProps {
+  items: string[];
+  handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  selectedItems: number[]
+}
+
+const CategoryFilter = ({ items, handleChange,selectedItems }: CategoryFilterProps) => {
   return (
     <div className="flex flex-col gap-3">
-      <CategoryFilterItem title="Sports" />
-      <CategoryFilterItem title="Entertainments" />
-      <CategoryFilterItem title="Weather" />
+      {items.map((item, index) => (
+        <CategoryFilterItem
+          key={index + 1}
+          title={item}
+          value={index}
+          onChange={handleChange}
+          isChecked={selectedItems.includes(index)}
+        />
+      ))}
     </div>
   );
 };
