@@ -18,7 +18,7 @@ export default function ArticleCard({ article }: ArticleCardProps) {
     window.open(url, "_blank");
   };
   return (
-    <Card className="p-3" sx={{ maxWidth: 345 }}>
+    <Card className="p-3 mt-3" sx={{ maxWidth: 345 }}>
       <CardMedia sx={{ height: 140 }} image={article.image} title="article" />
       <CardContent>
         <Typography variant="body1" className="text-2xl font-bold">

@@ -1,9 +1,7 @@
-
-
 const SettingsPage = () => {
-  return (
-    <div>SettingsPage</div>
-  )
-}
+  return <div className="container p-5">
+    Settings
+  </div>;
+};
 
-export default SettingsPage
+export default SettingsPage;

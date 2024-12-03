@@ -1,46 +1,55 @@
-# Getting Started with Create React App
+## Description
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+### News Grid
 
-## Available Scripts
+<p>An agreggation of news api from three different news sources built with React and Typescript</p>
+<li>NewsAPI: This is a comprehensive API that allows developers to access articles from
+more than 70,000 news sources, including major newspapers, magazines, and blogs.
+The API provides access to articles in various languages and categories, and it supports
+search and filtering </li>
+<li>New York Times: This API allows developers to access articles from The New York
+Times, one of the most respected news sources in the world. The API provides access
+to articles in various categories and supports search and filtering
+</li>
+<li>The Guardian: This API allows developers to access articles from The Guardian
+newspaper, one of the most respected news sources in the world. The API provides
+access to articles in various categories and supports search and filtering.
+</li>
 
-In the project directory, you can run:
+## Prerequisites
 
-### `npm start`
+<li>Docker</li>
+<li>Docker Compose</li>
+<li>News API Key</li>
+<li>Newyork Times API Key</li>
+<li>The Guardian API Key</li>
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Getting Started
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+1. Clone this repository:
 
-### `npm test`
+```bash
+$ git clone https://github.com/YhomiAce/news-grid
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+2. Navigate to the project directory:
 
-### `npm run build`
+```bash
+$ cd news-grid
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+3. Create .env from .env.example:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```bash
+$ cp .env.example .env
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+4. Build the Docker images and start the container:
 
-### `npm run eject`
+```bash
+$ docker-compose up -d --build
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+5. Preview on your browser:
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+<a href=http://localhost:3000>http://localhost:3000</a>

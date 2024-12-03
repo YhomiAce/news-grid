@@ -1,9 +1,10 @@
+import { CategoryItem } from "../types/Article";
 import CategoryFilterItem from "./CategoryFilterItem";
 
 interface CategoryFilterProps {
-  items: string[];
+  items: CategoryItem[];
   handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  selectedItems: number[]
+  selectedItems: string[]
 }
 
 const CategoryFilter = ({ items, handleChange,selectedItems }: CategoryFilterProps) => {
@@ -12,10 +13,10 @@ const CategoryFilter = ({ items, handleChange,selectedItems }: CategoryFilterPro
       {items.map((item, index) => (
         <CategoryFilterItem
           key={index + 1}
-          title={item}
-          value={index}
+          title={item.name}
+          value={item.id}
           onChange={handleChange}
-          isChecked={selectedItems.includes(index)}
+          isChecked={selectedItems.includes(item.id)}
         />
       ))}
     </div>

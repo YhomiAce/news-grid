@@ -13,6 +13,7 @@ import {
   DateFilterState,
   FIlters,
 } from "../types/DateFilterOption";
+import { categories, sources } from "../utils/constants";
 
 interface FilterDrawerProps {
   filterArticles: (filters: FIlters) => void;
@@ -25,11 +26,12 @@ export default function FilterDrawer({
 }: FilterDrawerProps) {
   const [open, setOpen] = useState(false);
   const [dateFilterState, setDateFilterState] = useState<DateFilterState>({
-    criteria: DateFilterOption.BETWEEN,
-    from: new Date().toISOString(),
+    criteria: {} as DateFilterOption,
+    from: "",
+    to: undefined,
   });
-  const [categoryFilters, setCategoryFilters] = useState<number[]>([]);
-  const [sourceFilters, setSourceFilters] = useState<number[]>([]);
+  const [categoryFilters, setCategoryFilters] = useState<string[]>([]);
+  const [sourceFilters, setSourceFilters] = useState<string[]>([]);
 
   const handleChange = (
     event:
@@ -39,38 +41,36 @@ export default function FilterDrawer({
     const { name, value } = event.target;
     setDateFilterState({ ...dateFilterState, [name]: value });
   };
+  // Utility function to handle changes
+  const handleFilterChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    selectedFilters: string[],
+    setFilters: React.Dispatch<React.SetStateAction<string[]>>
+  ) => {
+    const isSelected = event.target.checked;
+    const value = event.target.value;
+
+    if (isSelected) {
+      setFilters([...selectedFilters, value]);
+    } else {
+      const updatedFilters = selectedFilters.filter((item) => item !== value);
+      setFilters(updatedFilters);
+    }
+  };
 
   const handleCategoryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const isSelected = event.target.checked;
-    const value = parseInt(event.target.value);
-    if (isSelected) {
-      setCategoryFilters([...categoryFilters, value]);
-    } else {
-      const selectedCategories = [...categoryFilters];
-      const elements = selectedCategories.filter((item) => item !== value);
-      setCategoryFilters(elements);
-    }
+    handleFilterChange(event, categoryFilters, setCategoryFilters);
   };
 
   const handleSourceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const isSelected = event.target.checked;
-    const value = parseInt(event.target.value);
-    if (isSelected) {
-      setSourceFilters([...sourceFilters, value]);
-    } else {
-      const selectedSources = [...sourceFilters];
-      const elements = selectedSources.filter((item) => item !== value);
-      setSourceFilters(elements);
-    }
+    handleFilterChange(event, sourceFilters, setSourceFilters);
   };
 
   const applyFilters = () => {
-    const sourceFilter = sourceFilters.map((item) => sources[item]);
-    const categoryFilter = categoryFilters.map((item) => categories[item]);
     const filters: FIlters = {
       dateFilter: dateFilterState,
-      sourceFilters: sourceFilter,
-      categoryFilters: categoryFilter,
+      sourceFilters,
+      categoryFilters,
     };
     if (filters) {
       filterArticles(filters);
@@ -81,16 +81,12 @@ export default function FilterDrawer({
   const clearAppliedFilters = () => {
     clearFliters();
     setCategoryFilters([]);
-    setSourceFilters([])
+    setSourceFilters([]);
     setDateFilterState({
       criteria: DateFilterOption.BETWEEN,
       from: new Date().toISOString(),
     });
-  }
-
-  const sources = ["The Guardian", "The New York Times", "NewsAPI"];
-
-  const categories = ["Sports", "Entertainments", "Weather", "Politics", "Technology"];
+  };
 
   const toggleDrawer = () => {
     setOpen(!open);

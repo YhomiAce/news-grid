@@ -1,41 +1,24 @@
 import { useState } from "react";
 import { Article } from "../types/Article";
-import { fetchApi } from "../api/services";
+import {
+  fetchApi,
+  mapGuardiansApiResultToArticle,
+  mapNewsApiResultToArticle,
+  mapNewyorkTimesApiResultToArticle,
+} from "../api/services";
 import {
   DateFilterOption,
   DateFilterState,
   FIlters,
 } from "../types/DateFilterOption";
 import { isSameDay } from "date-fns";
-
-const DEFAULT_PAGE_SIZE = 10;
-
-type Person = {
-  firstname: string;
-  lastname: string;
-};
-
-type Multimedia = {
-  url: string;
-  height: number;
-  width: number;
-};
-
+import { DEFAULT_PAGE_SIZE } from "../utils/constants";
 
 export default function useNews() {
   const [newsList, setNewsList] = useState<Article[]>([]);
   const [searchResults, setsearchResults] = useState<Article[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>();
-
-  const combineName = (person: Person[]): string => {
-    return person.map((item) => `${item.firstname} ${item.lastname}`).join(",");
-  };
-
-  const getImageUrl = (medias: Multimedia[]): string => {
-    const url = medias.filter((item) => item.width >= 600)[0].url;
-    return `https://www.nytimes.com/${url}`;
-  };
 
   const fetchFromNewsApi = (search: string): string => {
     const baseUrl = process.env.REACT_APP_NEWS_APP_URL;
@@ -54,48 +37,8 @@ export default function useNews() {
   const fetchFromNewYorkNewsApi = (search: string) => {
     const baseUrl = process.env.REACT_APP_NEW_YORK_TIMES_URL;
     const apiKey = process.env.REACT_APP_NEW_YORK_TIMES_API_KEY;
-    const url = `${baseUrl}?q=${search}&api-key=${apiKey}`;
+    const url = `${baseUrl}/search/v2/articlesearch.json?q=${search}&api-key=${apiKey}`;
     return url;
-  };
-
-  const mapNewsApiResultToArticle = (result: any) => {
-    const mappedResult: Article[] = result.articles
-      .filter((item: any) => item.author && item.urlToImage)
-      .map((item: any) => ({
-        url: item.url,
-        author: item.author,
-        title: item.title,
-        publishedAt: new Date(item.publishedAt),
-        image: item.urlToImage,
-        source: "NewsAPI",
-      }));
-    return mappedResult;
-  };
-
-  const mapGuardiansApiResultToArticle = (data: any) => {
-    const mappedResult: Article[] = data.response.results.map((item: any) => ({
-      url: item.webUrl,
-      author: item.fields.byline,
-      title: item.webTitle,
-      publishedAt: new Date(item.fields.firstPublicationDate),
-      image: item.thumbnail,
-      source: "The Guardian",
-      category: item.pillarName,
-    }));
-    return mappedResult;
-  };
-
-  const mapNewyorkTimesApiResultToArticle = (data: any) => {
-    const mappedResult: Article[] = data.response.docs.map((item: any) => ({
-      url: item.web_url,
-      author: combineName(item.byline.person),
-      title: item.headline.main,
-      publishedAt: new Date(item.pub_date),
-      image: getImageUrl(item.multimedia),
-      source: "The New York Times",
-      category: item.section_name,
-    }));
-    return mappedResult;
   };
 
   const aggregateNews = async (search: string) => {
@@ -198,9 +141,9 @@ export default function useNews() {
   };
 
   const clearFliters = () => {
-    const articles = [...searchResults]
+    const articles = [...searchResults];
     setNewsList(articles);
-  }
+  };
 
   return {
     aggregateNews,
@@ -208,6 +151,7 @@ export default function useNews() {
     error,
     newsList,
     filterArticles,
-    clearFliters
+    clearFliters,
+    showFilter: searchResults.length > 0,
   };
 }

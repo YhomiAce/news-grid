@@ -2,7 +2,7 @@ import CustomInput from "./CustomInput";
 
 interface CategoryFilterItemProps {
   title: string;
-  value: number;
+  value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   isChecked: boolean
 }

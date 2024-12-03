@@ -19,7 +19,7 @@ const CustomSelect = ({ label, options, name, value, onChange }: SelectProps) =>
       value={value}
       onChange={onChange}
     >
-      <option disabled selected>
+      <option disabled>
         {label}
       </option>
       {options.map((item, index) => (

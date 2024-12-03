@@ -20,8 +20,10 @@ const NewsSearchInput = ({ searchNews }: NewsSearchInputProps) => {
       <Button
         className="btn btn-active btn-neutral"
         onClick={() => {
-          setSearch('')
-          searchNews(search);
+          if (search.length > 0) {
+            setSearch("");
+            searchNews(search);
+          }
         }}
       >
         Search
