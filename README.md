@@ -38,7 +38,7 @@ $ git clone https://github.com/YhomiAce/news-grid
 $ cd news-grid
 ```
 
-3. Create .env from .env.example:
+3. Create .env from .env.example and fill in the necessary api keys:
 
 ```bash
 $ cp .env.example .env
